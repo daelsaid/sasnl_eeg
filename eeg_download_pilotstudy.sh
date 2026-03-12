@@ -1,31 +1,32 @@
 #!/bin/bash
+
+#Author: Dawlat El-Said 
 # eeg_download_pilotstudy.sh - Download EEG pilot data from Box to oak storage
 #
 # Box folder naming convention: PID_visit_session.EEG
-# Target structure:
-#   PID/visit/session/eeg/clicktrials/         <- clicktrials EEG files
-#   PID/visit/session/eeg/storytrials/         <- storytrials EEG files
-#   PID/visit/session/behavioral/eeg/Results/  <- behavioral logs + audio
+#   PID/visit/session/eeg/clicktrials/         <- clicktrials
+#   PID/visit/session/eeg/storytrials/         <- storytrials
+#   PID/visit/session/behavioral/eeg/Results/  <- behavioral logs from expyfun + audio of comprehension question and answer
 #
 # Usage:
 #   ./eeg_download_pilotstudy.sh                  # download all PIDs
-#   ./eeg_download_pilotstudy.sh 14054            # download specific PID only
-#   ./eeg_download_pilotstudy.sh --dry-run        # preview all (no files copied)
-#   ./eeg_download_pilotstudy.sh 14054 --dry-run  # preview specific PID
+#   ./eeg_download_pilotstudy.sh 14054            # download specific PID
+#   ./eeg_download_pilotstudy.sh --dry-run        # preview all dry run
+#   ./eeg_download_pilotstudy.sh 14054 --dry-run  # preview specific PID dryrun
 
 set -u
 
 usage() {
     echo "Usage: $(basename "$0") [PID] [--dry-run] [-h]"
     echo ""
-    echo "  PID          Optional. Download only this participant ID (e.g. 14054)."
-    echo "               If omitted, all PID_visit_session.EEG folders are downloaded if eeg data dir is not present."
-    echo "  --dry-run    Preview what would be downloaded without copying any files."
+    echo "  PID          Optional. Download the subject ID provided (e.g. 14054)."
+    echo "               if no PID, all dirs downloaded if they match standard structure"
+    echo "  --dry-run    do a dry run of the download"
     echo "  -h, --help   Show this help message."
     echo ""
     echo "Examples:"
     echo "  $(basename "$0")                  # download all PIDs"
-    echo "  $(basename "$0") 14054            # download PID 14054 only"
+    echo "  $(basename "$0") 14054            # download 14054 only"
     echo "  $(basename "$0") --dry-run        # dry run download of all EEG dirs"
     echo "  $(basename "$0") 14054 --dry-run  # dry run download of 14054"
     exit 0
