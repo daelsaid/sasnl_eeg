@@ -32,19 +32,24 @@ usage() {
     exit 0
 }
 
+if ["$#" -gt 2 ]; then
+    echo "Error: Too many arguments."
+    usage
+fi
+
 box_parent_dir="Abrams Lab Studies/Abrams_EEG_data/from_1070_BV_computer/in_lab_eeg_pilot_data"
 oak_dir='/oak/stanford/groups/daa/rawdata/sasnl/eeg_pilot'
 
 #args
 DRY_RUN=''
-TARGET_PID=''
+PID_todownload=''
 for arg in "$@"; do
     if [[ "$arg" == "-h" || "$arg" == "--help" ]]; then
         usage
     elif [[ "$arg" == "--dry-run" ]]; then
         DRY_RUN='--dry-run'
     elif [[ "$arg" =~ ^[0-9]+$ ]]; then
-        TARGET_PID="$arg"
+        PID_todownload="$arg"
     else
         echo "Error: unknown argument '$arg'"
         echo ""
@@ -63,7 +68,7 @@ echo "EEG data download from BOX"
 echo "Started:  $(date)"
 echo "Source:   $box_parent_dir"
 echo "Output:   $oak_dir"
-[[ -n "$TARGET_PID" ]] && echo "PID:      $TARGET_PID (only)"
+[[ -n "$PID_todownload" ]] && echo "PID:      $PID_todownload (only)"
 [[ -n "$DRY_RUN"    ]] && echo "Mode:     DRY RUN (no files will be copied)"
 echo "Log:      $LOG_FILE"
 echo "========================================"
@@ -95,7 +100,7 @@ for folder in "${folders[@]}"; do
     IFS='_' read -r pid visit session <<< "$base"
 
     # If PID provided, skip other subj
-    if [[ -n "$TARGET_PID" && "$pid" != "$TARGET_PID" ]]; then
+    if [[ -n "$PID_todownload" && "$pid" != "$PID_todownload" ]]; then
         n_skip=$((n_skip + 1))
         continue
     fi
@@ -144,7 +149,7 @@ for folder in "${folders[@]}"; do
         n_error=$((n_error + 1))
     fi
 
-    # --- behavioral Results folder (comp_audio_recording/) ---
+    # --- behavioral "Results" folder (comp_audio_recording/) ---
     echo "  [3/3] Results/ → $behav_eeg_dir"
     if rclone -v --stats 5s --retries 5 --retries-sleep 10s copy  $DRY_RUN \
             --ignore-existing \
